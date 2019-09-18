@@ -1,0 +1,55 @@
+@()
+
+@main("Welcome to Play") {
+  <h1>Welcome to Play!</h1>
+secret: <p id="secret"></p>
+
+<button type="button" onclick="getCode()">Get 6 digits code</button><br/>
+code: <p id="code"></p>
+
+<input type="text" id="inputCode" />
+<button type="button" onclick="verifyCode()">確認</button><br/>
+結果: <p id="result"></p>
+<script>
+function getRequest(url, target) {
+  var request = new XMLHttpRequest();
+  var item = document.getElementById(target);
+  request.open('GET', url);
+  request.onreadystatechange = function () {
+      if (request.readyState != 4) {
+          // リクエスト中
+      } else if (request.status != 200) {
+          // 失敗
+          item.textContent = "リクエスト失敗";
+      } else {
+          // 取得成功
+          var result = request.responseText;
+          item.textContent = result;
+      }
+  };
+  request.send(null);
+}
+getRequest("/getSecret", "secret");
+
+var getCode = function() { getRequest("/getCode", "code"); }
+
+var verifyCode = function() {
+  var code = document.getElementById("inputCode").value;
+  var url = "/verifyCode?inputCode=" + code;
+  var result = document.getElementById("result");
+  var request = new XMLHttpRequest();
+  request.open('GET', url);
+  request.onreadystatechange = function () {
+      if (request.readyState != 4) {
+          // リクエスト中
+      } else if (request.status != 200) {
+          result.textContent = "リクエスト失敗";
+      } else {
+          result.textContent = request.responseText;
+      }
+  };
+  request.send(null);
+}
+
+</script>
+}
