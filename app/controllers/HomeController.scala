@@ -12,7 +12,8 @@ import play.api.mvc._
  */
 @Singleton
 class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
-  val auth = GoogleAuth()
+  val auth = GoogleAuth("koichi", "hogehoge")
+  auth.createQRCode("public/images/qr.png", 200, 200)
 
   /**
    * Create an Action to render an HTML page.

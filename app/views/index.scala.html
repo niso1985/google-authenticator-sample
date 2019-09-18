@@ -2,7 +2,9 @@
 
 @main("Welcome to Play") {
   <h1>Welcome to Play!</h1>
-secret: <p id="secret"></p>
+secret: <p id="secret"></p><br/>
+
+QRCode: <img id="CaptchaImg"/><br/>
 
 <button type="button" onclick="getCode()">Get 6 digits code</button><br/>
 code: <p id="code"></p>
@@ -51,5 +53,17 @@ var verifyCode = function() {
   request.send(null);
 }
 
+// png download
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function(){
+    if (this.readyState == 4 && this.status == 200){
+        var img = document.getElementById("CaptchaImg");
+        var url = window.URL || window.webkitURL;
+        img.src = url.createObjectURL(this.response);
+    }
+}
+xhr.open('GET', '/assets/images/qr.png');
+xhr.responseType = 'blob';
+xhr.send();
 </script>
 }

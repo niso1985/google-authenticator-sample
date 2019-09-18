@@ -11,7 +11,7 @@ import org.apache.commons.codec.binary.Hex
 import scala.util.Random
 import org.ietf.tools.TOTP
 
-case class GoogleAuth(secret: String){
+case class GoogleAuth(secret: String, account: String, issuer: String){
   import GoogleAuth._
   def getCode: String = {
     val normalizedBase32Key = secret.replace(" ", "").toUpperCase
@@ -26,8 +26,8 @@ case class GoogleAuth(secret: String){
 
   import java.io.UnsupportedEncodingException
 
-  def getGoogleAuthenticatorBarCode(secretKey: String, account: String, issuer: String): String = {
-    val normalizedBase32Key = secretKey.replace(" ", "").toUpperCase
+  val barCodeData: String = {
+    val normalizedBase32Key = secret.replace(" ", "").toUpperCase
     try {
       "otpauth://totp/" + URLEncoder.encode(issuer + ":" + account, "UTF-8").replace("+", "%20") + "?secret=" + URLEncoder.encode(normalizedBase32Key, "UTF-8").replace("+", "%20") + "&issuer=" + URLEncoder.encode(issuer, "UTF-8").replace("+", "%20")
     }catch {
@@ -36,7 +36,7 @@ case class GoogleAuth(secret: String){
     }
   }
 
-  def createQRCode(barCodeData: String, filePath: String, height: Int, width: Int): Unit = {
+  def createQRCode(filePath: String, height: Int, width: Int): Unit = {
     val matrix = new MultiFormatWriter().encode(barCodeData, BarcodeFormat.QR_CODE, width, height)
     try {
       val out = new FileOutputStream(filePath)
@@ -49,10 +49,10 @@ case class GoogleAuth(secret: String){
 
 object GoogleAuth{
   val base32 = new Base32()
-  def apply(): GoogleAuth = {
+  def apply(account: String, issuer: String): GoogleAuth = {
     val bytes = new Array[Byte](20)
     Random.nextBytes(bytes)
     val s = base32.encodeToString(bytes).toLowerCase.replaceAll("(.{4})(?=.{4})", "$1 ")
-    new GoogleAuth(s)
+    new GoogleAuth(s, account, issuer)
   }
 }
